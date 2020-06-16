@@ -12,6 +12,8 @@ pipeline {
     {
         ECRURL = '853973692277.dkr.ecr.us-east-1.amazonaws.com'
         ECRCRED = 'ecr:us-east-1:aws-user-credential'
+        GITHUB_USERNAME = 'chandraleka16'
+        GITHUB_PASSWORD = 'Mano3Logesh'
     }
     agent {
         node {
@@ -53,7 +55,7 @@ pipeline {
                 script {
                     if (branch.contains('release')){
                         def gitTag = "build-${BUILD_NUMBER}"
-                        def gitUrl = "https://${env.GITHUB_USERNAME}:${env.GITHUB_PASSWORD}@github.com/chandraleka16/springboot-jenkins.git"
+                        def gitUrl = "https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/chandraleka16/springboot-jenkins.git"
 
                         sh "git tag ${gitTag}"
                         sh "git push ${gitUrl} ${gitTag}"
