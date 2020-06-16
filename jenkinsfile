@@ -58,20 +58,14 @@ pipeline {
                         def ECS_REGISTRY = ECRURL
                         def ECR_REPO = "ac-devops-training"
 
-                        docker.withRegistry("853973692277.dkr.ecr.us-east-1.amazonaws.com/ac-devops-training", "ecr:us-east-1:aws-user-credential") {
+                        def aws_id='ASIA4NVGMN52Y2ZWI2H6'
+                        sh "`aws ecr get-login --registry-ids ${aws_id} --no-include-email)`"
+                        sh """
                             docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}
                             docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
                             echo "${ECS_REGISTRY}/${ECR_REPO}"
                             docker push ${ECS_REGISTRY}/${ECR_REPO}
-                        }
-
-                        // sh "`aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853973692277.dkr.ecr.us-east-1.amazonaws.com`"
-                        // sh """
-                        //     docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}
-                        //     docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
-                        //     echo "${ECS_REGISTRY}/${ECR_REPO}"
-                        //     docker push ${ECS_REGISTRY}/${ECR_REPO}
-                        // """ 
+                        """ 
                     } else if (branch == 'origin' || branch == 'master') {
                         sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:build-${BUILD_NUMBER}"
                         sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
