@@ -1,0 +1,84 @@
+def dockerPublisherName = "chandraleka1403"
+def dockerRepoName = "springboot-app"
+
+def gitRepoName = "https://github.com/chandraleka16/springboot-jenkins.git"
+
+def customLocalImage = "springboot-app"
+
+properties([pipelineTriggers([githubPush()])])
+
+pipeline {
+    environment 
+    {
+        ECRURL = '853973692277.dkr.ecr.us-east-1.amazonaws.com'
+        ECRCRED = 'ecr:us-east-1:aws-user-credential'
+    }
+    agent {
+        node {
+            label 'slave2'
+        }
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "**", url: "${gitRepoName}"
+                script {
+                    branch = "${GIT_BRANCH}".split('/')[0]
+                }
+                echo "CHECKING OUT BRANCH:${branch}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    if (branch.contains('release') || branch == 'master'){
+                        
+                        sh "docker rmi ${customLocalImage} || true"
+                        sh "docker build -t ${customLocalImage} ."
+                        sendSlackMessage "Build Successul"
+                        // sh "printenv"
+                    } else if (branch == 'qa' || branch == 'develop') {
+                        echo "It is a ${branch} branch"
+                    } else if (gitBranch.contains('feature')) {
+                        echo "It is a ${branch} branch"
+                    }
+                }
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                script {
+                    if (branch.contains('release')){
+                        def gitTag = "build-${BUILD_NUMBER}"
+                        def gitUrl = "https://${env.GITHUB_USERNAME}:${env.GITHUB_PASSWORD}@github.com/chandraleka16/springboot-jenkins.git"
+
+                        sh "git tag ${gitTag}"
+                        sh "git push ${gitUrl} ${gitTag}"
+
+                        def ECS_REGISTRY = ECRURL
+                        def ECR_REPO = "ac-devops-training"
+                        sh "`aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853973692277.dkr.ecr.us-east-1.amazonaws.com`"
+                        sh """
+                            docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}
+                            docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
+                            echo "${ECS_REGISTRY}/${ECR_REPO}"
+                            docker push ${ECS_REGISTRY}/${ECR_REPO}
+                        """ 
+                    } else if (branch == 'origin' || branch == 'master') {
+                        sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:build-${BUILD_NUMBER}"
+                        sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
+                        sh "docker push ${dockerPublisherName}/${dockerRepoName}"
+                    } else if (branch == 'qa' || branch == 'develop') {
+                        echo "It is a ${branch} branch"
+                    } else if (branch.contains('feature')) {
+                        echo "It is a ${branch} branch"
+                    }
+                }
+            }
+        }
+    }
+}
+
