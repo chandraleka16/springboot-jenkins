@@ -4,17 +4,13 @@ def dockerRepoName = "springboot-app"
 def gitRepoName = "https://github.com/chandraleka16/springboot-jenkins.git"
 
 def customLocalImage = "springboot-app"
-
+def ECRURL = '853973692277.dkr.ecr.us-east-1.amazonaws.com'
+def ECRCRED = 'ecr:us-east-1:aws-user-credential'
+def GITHUB_USERNAME = 'chandraleka16'
+def GITHUB_PASSWORD = 'Mano3Logesh'
 properties([pipelineTriggers([githubPush()])])
 
 pipeline {
-    environment 
-    {
-        ECRURL = '853973692277.dkr.ecr.us-east-1.amazonaws.com'
-        ECRCRED = 'ecr:us-east-1:aws-user-credential'
-        GITHUB_USERNAME = 'chandraleka16'
-        GITHUB_PASSWORD = 'Mano3Logesh'
-    }
     agent {
         node {
             label 'slave2'
