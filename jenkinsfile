@@ -60,7 +60,7 @@ pipeline {
 
                         def aws_id='ASIA4NVGMN52Y2ZWI2H6'
 
-                        sh "`aws ecr get-login --registry-ids ${aws_id} --no-include-email`"
+                        sh "`aws ecr get-login --registry-ids ${aws_id} --no-include-email --region us-east-1`"
                         sh """
                             docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}
                             docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
