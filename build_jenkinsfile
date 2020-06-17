@@ -1,13 +1,7 @@
-def dockerPublisherName = "chandraleka1403"
-def dockerRepoName = "springboot-app"
-
 def gitRepoName = "https://github.com/chandraleka16/springboot-jenkins.git"
 
 def customLocalImage = "springboot-app"
-def ECRURL = '853973692277.dkr.ecr.us-east-1.amazonaws.com'
-def ECRCRED = 'ecr:us-east-1:aws-user-credential'
-def GITHUB_USERNAME = 'chandraleka16'
-def GITHUB_PASSWORD = 'Mano3Logesh'
+
 properties([pipelineTriggers([githubPush()])])
 
 pipeline {
@@ -50,28 +44,22 @@ pipeline {
                 script {
                     if (branch.contains('release')){
                         def gitTag = "build-${BUILD_NUMBER}"
-                        def gitUrl = "https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/chandraleka16/springboot-jenkins.git"
+                        def gitUrl = "https://${env.GITHUB_USERNAME}:${env.GITHUB_PASSWORD}@github.com/chandraleka16/springboot-jenkins.git"
 
                         sh "git tag ${gitTag}"
                         sh "git push ${gitUrl} ${gitTag}"
 
-                        def ECS_REGISTRY = ECRURL
-                        def ECR_REPO = "ac-devops-training"
+                        sh "`aws ecr get-login --registry-ids ${env.AWS_ACCESS_KEY_ID} --no-include-email --region us-east-1`"
+                        sh "docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}"
+                        sh "docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest"
+                        echo "${env.ECR_URL}/${env.ECR_REPO}"
+                        sh "docker push ${env.ECR_URL}/${env.ECR_REPO}"
 
-                        def aws_id='ASIA4NVGMN52Y2ZWI2H6'
-
-                        sh "`aws ecr get-login --registry-ids ${aws_id} --no-include-email --region us-east-1`"
-                        sh """
-                            docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}
-                            docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
-                            echo "${ECS_REGISTRY}/${ECR_REPO}"
-                            docker push ${ECS_REGISTRY}/${ECR_REPO}
-                        """ 
-                    } else if (branch == 'origin' || branch == 'master') {
+                    } else if (branch == 'master') {
                         sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:build-${BUILD_NUMBER}"
                         sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
                         sh "docker push ${dockerPublisherName}/${dockerRepoName}"
-                    } else if (branch == 'qa' || branch == 'develop') {
+                    } else if (branch == 'develop') {
                         echo "It is a ${branch} branch"
                     } else if (branch.contains('feature')) {
                         echo "It is a ${branch} branch"
