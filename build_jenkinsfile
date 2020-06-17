@@ -51,12 +51,13 @@ pipeline {
 
                         sh "git tag ${gitTag}"
                         sh "git push ${gitUrl} ${gitTag}"
-
+                        def ECR_URL="853973692277.dkr.ecr.us-east-1.amazonaws.com"
+                        def ECR_REPO="ac-devops-training"
                    //     sh "`aws ecr get-login --registry-ids ${env.AWS_ACCESS_KEY_ID} --no-include-email --region us-east-1`"
-                        sh "docker tag ${customLocalImage} ${env.ECR_URL}/${env.ECR_REPO}:${buildTag}"
-                        sh "docker tag ${customLocalImage} ${env.ECR_URL}/${env.ECR_REPO}:latest"
-                        echo "${env.ECR_URL}/${env.ECR_REPO}"
-                        sh "docker push ${env.ECR_URL}/${env.ECR_REPO}"
+                        sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:${buildTag}"
+                        sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:latest"
+                        echo "${ECR_URL}/${ECR_REPO}"
+                        sh "docker push ${ECR_URL}/${ECR_REPO}"
 
                     } else if (branch == 'master') {
                         sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:build-${BUILD_NUMBER}"
