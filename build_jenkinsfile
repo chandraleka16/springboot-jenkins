@@ -55,7 +55,7 @@ pipeline {
                         def ECR_REPO="ac-devops-training"
                         //withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-user-credential', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                             // some block
-                        sh("eval \$(aws ecr get-login --no-include-email | sed 's|https://||')")
+                        sh("eval \$(aws ecr get-login --no-include-email --region us-east-1 | sed 's|https://||')")
                        // sh "`aws ecr get-login --no-include-email --region us-east-1`"
                         sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:${gitTag}"
                         sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:latest"
