@@ -53,7 +53,7 @@ pipeline {
                         sh "git push ${gitUrl} ${gitTag}"
                         def ECR_URL="853973692277.dkr.ecr.us-east-1.amazonaws.com"
                         def ECR_REPO="ac-devops-training"
-                        sh "`aws ecr get-login --registry-ids ASIA4NVGMN52TUOJFVE4 --no-include-email --region us-east-1`"
+                        sh "`aws ecr get-login --registry-ids 853973692277 --no-include-email --region us-east-1`"
                         sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:${buildTag}"
                         sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:latest"
                         echo "${ECR_URL}/${ECR_REPO}"
