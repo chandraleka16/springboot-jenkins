@@ -53,15 +53,15 @@ pipeline {
                         sh "git push ${gitUrl} ${gitTag}"
                         def ECR_URL="853973692277.dkr.ecr.us-east-1.amazonaws.com"
                         def ECR_REPO="ac-devops-training"
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-ecr-credentials', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        //withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-ecr-credentials', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
     // some block
-                        //sh("eval \$(aws ecr get-login --no-include-email --region us-east-1 | sed 's|https://||')")
+                        sh("eval \$(aws ecr get-login --no-include-email --region us-east-1 | sed 's|https://||')")
                        //sh "`aws ecr get-login --no-include-email --region us-east-1`"
                         sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:${gitTag}"
                         sh "docker tag ${customLocalImage} ${ECR_URL}/${ECR_REPO}:latest"
                         echo "${ECR_URL}/${ECR_REPO}"
                         sh "docker push ${ECR_URL}/${ECR_REPO}:latest"
-                       }
+                       //}
                     } else if (branch == 'master') {
                         sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:build-${BUILD_NUMBER}"
                         sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
