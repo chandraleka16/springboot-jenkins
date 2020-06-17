@@ -52,7 +52,7 @@ pipeline {
                         sh "git tag ${gitTag}"
                         sh "git push ${gitUrl} ${gitTag}"
 
-                        sh "`aws ecr get-login --registry-ids ${env.AWS_ACCESS_KEY_ID} --no-include-email --region us-east-1`"
+                   //     sh "`aws ecr get-login --registry-ids ${env.AWS_ACCESS_KEY_ID} --no-include-email --region us-east-1`"
                         sh "docker tag ${customLocalImage} ${env.ECR_URL}/${env.ECR_REPO}:${buildTag}"
                         sh "docker tag ${customLocalImage} ${env.ECR_URL}/${env.ECR_REPO}:latest"
                         echo "${env.ECR_URL}/${env.ECR_REPO}"
