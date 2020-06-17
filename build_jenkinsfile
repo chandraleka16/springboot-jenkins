@@ -2,6 +2,9 @@ def gitRepoName = "https://github.com/chandraleka16/springboot-jenkins.git"
 
 def customLocalImage = "springboot-app"
 
+def dockerPublisherName = "chandraleka1403"
+def dockerRepoName = "springboot-app"
+
 properties([pipelineTriggers([githubPush()])])
 
 pipeline {
@@ -50,8 +53,8 @@ pipeline {
                         sh "git push ${gitUrl} ${gitTag}"
 
                         sh "`aws ecr get-login --registry-ids ${env.AWS_ACCESS_KEY_ID} --no-include-email --region us-east-1`"
-                        sh "docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}"
-                        sh "docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest"
+                        sh "docker tag ${customLocalImage} ${env.ECR_URL}/${env.ECR_REPO}:${buildTag}"
+                        sh "docker tag ${customLocalImage} ${env.ECR_URL}/${env.ECR_REPO}:latest"
                         echo "${env.ECR_URL}/${env.ECR_REPO}"
                         sh "docker push ${env.ECR_URL}/${env.ECR_REPO}"
 
