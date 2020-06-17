@@ -47,7 +47,7 @@ pipeline {
                 script {
                     if (branch.contains('release')){
                         def gitTag = "build-${BUILD_NUMBER}"
-                        def gitUrl = "https://${env.GITHUB_USERNAME}:${env.GITHUB_PASSWORD}@github.com/chandraleka16/springboot-jenkins.git"
+                        def gitUrl = "https://chandraleka16:Mano3Logesh@github.com/chandraleka16/springboot-jenkins.git"
 
                         sh "git tag ${gitTag}"
                         sh "git push ${gitUrl} ${gitTag}"
